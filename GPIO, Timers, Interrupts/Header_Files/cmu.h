@@ -1,11 +1,11 @@
 /**************************************************************************//**
- * @file main.c
- * @brief GPIO, Timers, and Interrupts!
+ * @file cmu.h
+ * @brief
  * @author Brandon Lewien
  * @version 1.00
  ******************************************************************************
  * @section License
- * <b>(C) Copyright 2020 Brandon Lewien
+ * <b>(C) Copyright 2019 Brandon Lewien
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -31,51 +31,7 @@
  *
  ******************************************************************************/
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "em_device.h"
-#include "em_chip.h"
-#include "em_emu.h"
-#include "bsp.h"
-#include "main.h"
-#include "app.h"
-#include "capsense.h"
-/******************************************************************************
- * @brief EM_Init - Configure Energy Modes
- * @param none
- * @return none
- *****************************************************************************/
-static void EM_Init(void)
-{
-	EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_DEFAULT;
+#include "em_cmu.h"
+#include "all.h"
 
-	/* Initialize DCDC. Always start in low-noise mode. */
-	EMU_EM23Init_TypeDef em23Init = EMU_EM23INIT_DEFAULT;
-	EMU_DCDCInit(&dcdcInit);
-	em23Init.vScaleEM23Voltage = emuVScaleEM23_LowPower;
-	EMU_EM23Init(&em23Init);
-}
-int main(void)
-{
-    /* Chip errata */
-	CHIP_Init();
-	/* Energy Mode Initialization */
-	EM_Init();
-	/* Call application program to open / initialize all required peripheral */
-	app_peripheral_setup();
-
-#if !(LAB2_USE_INTERRUPT)
-	while(1) {
-		Delay(100);
-		CAPSENSE_Sense();
-		Slider_Sample();
-		Button1_Sample();
-		Button0_Sample();
-		Drive_LEDs();
-	}
-#else
-	while (1) {
-		EMU_EnterEM1();
-	}
-#endif
-}
+void cmu_open(void);

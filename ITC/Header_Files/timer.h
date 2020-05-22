@@ -34,13 +34,14 @@
 #ifndef SRC_HEADER_FILES_TIMER_H_
 #define SRC_HEADER_FILES_TIMER_H_
 
-#include "all.h"
 #include <stdint.h>
+
+#include "all.h"
 #include "bsp.h"
 #include "gpio.h"
 //#include "capsense.h"
 
-OS_TMR   MyTmr1;
+OS_TMR  MyTmr1;
 
 void Delay(uint32_t dlyTicks);
 void SysTick_Setup(void);

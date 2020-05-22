@@ -31,61 +31,7 @@
 // *
 // ******************************************************************************/
 
-#include  <bsp_os.h>
-#include  "bsp.h"
-
 #include  "main.h"
-#include  "app.h"
-#include  "em_emu.h"
-#include  "gpio.h"
-#include <../../platform/emlib/inc/em_csen.h>
-#include "em_cmu.h"
-
-
-#include  <cpu/include/cpu.h>
-#include  <common/include/common.h>
-#include  <kernel/include/os_trace.h>
-
-#include  <common/include/lib_def.h>
-#include  <common/include/rtos_utils.h>
-#include  <common/include/toolchains.h>
-
-static  CPU_STK  Ex_MainStartTaskStk[EX_MAIN_START_TASK_STK_SIZE];
-static  CPU_STK  Button_TaskStk[BUTTON_TASK_STK_SIZE];
-static  CPU_STK  Slider_TaskStk[SLIDER_TASK_STK_SIZE];
-static  CPU_STK  LED_TaskStk[LED_TASK_STK_SIZE];
-static  CPU_STK  Idle_TaskStk[IDLE_TASK_STK_SIZE];
-
-static  OS_TCB   IdleTaskTCB;
-static  OS_TCB   ButtonTaskTCB;
-static  OS_TCB   LEDTaskTCB;
-static  OS_TCB   SliderTaskTCB;
-static  OS_TCB   Ex_MainStartTaskTCB;
-
-static  void  Ex_MainStartTask (void * p_arg);
-static  void  IdleTask (void * p_arg);
-
-OS_FLAG_GRP ButtonGroup;
-OS_FLAGS    Button0Flag = 1;
-OS_FLAGS    Button1Flag = 2;
-OS_Q        App_QUSB;
-OS_SEM      sliderSemaphore;
-volatile bool pushButton1State   = OFF;
-volatile bool pushButton0State   = OFF;
-volatile int32_t sliderPosition = -1;
-
-/* Local Defines */
-#define CAPSENSE_CHANNELS       { csenSingleSelAPORT1XCH0, csenSingleSelAPORT1YCH1, csenSingleSelAPORT1XCH2, csenSingleSelAPORT1YCH3 }
-#define CSEN_CHANNELS           4             /**< Number of channels in use for capsense */
-#define CAPSENSE_THRESHOLD		25000u
-
-/* Global Variables */
-CSEN_Init_TypeDef csenInit = CSEN_INIT_DEFAULT;
-CSEN_InitMode_TypeDef csenInitMode = CSEN_INITMODE_DEFAULT;
-CSEN_InputSel_TypeDef channelList[CSEN_CHANNELS] = CAPSENSE_CHANNELS;
-
-bool capsenseIsPressed[CSEN_CHANNELS];
-
 
 /******************************************************************************
  * @brief SliderCallback
@@ -160,16 +106,16 @@ void ButtonInput (void * p_arg)
 {
     RTOS_ERR  err;
     PP_UNUSED_PARAM(p_arg);
-//    eMessageOptions send_msg;
+//  eMessageOptions send_msg;
     while (DEF_ON) {
 
-//    	char * p_buf = "";
-    	OSFlagPend(&ButtonGroup,                  /* Wait on this */
+//  	char * p_buf = "";
+    	OSFlagPend(&ButtonGroup,                  /* Wait on this    */
     			    Button1Flag + Button0Flag,    /* Events to check */
-		            0,                            /* till all set */
-					OS_OPT_PEND_FLAG_SET_ANY,     /* then consume */
+		            0,                            /* till all set    */
+					OS_OPT_PEND_FLAG_SET_ANY,     /* then consume    */
 					DEF_NULL,
-					&err);                        /* time out */
+					&err);                        /* time out        */
     	int whichFlag = (int)OSFlagPendGetFlagsRdy(&err);
 		OSFlagPost(&ButtonGroup, (OS_FLAGS)whichFlag, OS_OPT_POST_FLAG_CLR, &err);
 		int but0State = Button0_Sample();
@@ -224,7 +170,7 @@ void SliderInput (void * p_arg)
 		/* Reset CAPSENSE state variables before updating */
 		for (i = CSEN_CHANNELS; i > 0; i--)
 		{
-		    capsenseIsPressed[i-1] = 0;
+		  capsenseIsPressed[i-1] = 0;
 		}
 
 		/* Loop over CAPTOUCH channels and take CSEN measurements */
@@ -247,10 +193,10 @@ void SliderInput (void * p_arg)
 
 			/* Update global variable */
 			if (csResult > CAPSENSE_THRESHOLD) {
-			    capsenseIsPressed[i-1] = true;
+			 capsenseIsPressed[i-1] = true;
 			}
 			else {
-			    capsenseIsPressed[i-1] = false;
+			 capsenseIsPressed[i-1] = false;
 			}
 		}
 		int sliderPosition = -1;
@@ -310,7 +256,7 @@ static  void  Ex_MainStartTask (void  *p_arg)
     OSStatReset(&err);
     GPIO_Open();
     CPU_TS_TmrInit();
-//    CAPSENSE_Init();
+//  CAPSENSE_Init();
     GPIO_Interrupt_Setup();
 
     OSTaskCreate(&LEDTaskTCB,
@@ -370,7 +316,7 @@ static  void  Ex_MainStartTask (void  *p_arg)
                  &err);
 
     OSTmrCreate (&MyTmr1,
-			      "Slider Callback",
+			     "Slider Callback",
 			      0,
 			      1,
 				  OS_OPT_TMR_PERIODIC,
@@ -407,15 +353,15 @@ int  main (void)
 {
     RTOS_ERR  err;
 
-    BSP_SystemInit();                                           /* Initialize System.                                   */
-    CPU_Init();                                                 /* Initialize CPU.                                      */
+    BSP_SystemInit();                                           /* Initialize System.                            */
+    CPU_Init();                                                 /* Initialize CPU.                               */
 
     OS_TRACE_INIT();
-    OSInit(&err);                                               /* Initialize the Kernel.                               */
-                                                                /* Check error code.                                    */
+    OSInit(&err);                                               /* Initialize the Kernel.                        */
+                                                                /* Check error code.                             */
     APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
 
-    OSTaskCreate(&Ex_MainStartTaskTCB,                          /* Create the Start Task.                               */
+    OSTaskCreate(&Ex_MainStartTaskTCB,                          /* Create the Start Task.                        */
                  "Ex Main Start Task",
                   Ex_MainStartTask,
                   DEF_NULL,

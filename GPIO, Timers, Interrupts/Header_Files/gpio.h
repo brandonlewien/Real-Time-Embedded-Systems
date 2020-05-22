@@ -34,22 +34,23 @@
 #include "em_gpio.h"
 #include "all.h"
 
-// LEDs
-#define	LED0_port		gpioPortF
-#define LED0_pin		4
-#define LED0_default	false 	// Default false (0) = off, true (1) = on
-#define LED1_port		gpioPortF
-#define LED1_pin		5
-#define LED1_default	false	// Default false (0) = off, true (1) = on
-#define LED_ON          0
-#define LED_OFF         1
-// Buttons
-#define	BUT0_port		gpioPortF
-#define BUT0_pin		6
-#define BUT0_default	true
-#define BUT1_port		gpioPortF
-#define BUT1_pin		7
-#define BUT1_default	true
+#define LED0_port      gpioPortF
+#define LED1_port      gpioPortF
+#define BUT0_port      gpioPortF
+#define BUT1_port      gpioPortF
+
+#define LED0_default       false    // Default false (0) = off, true (1) = on
+#define LED1_default       false    // Default false (0) = off, true (1) = on
+#define BUT0_default        true
+#define BUT1_default        true
+
+#define LED0_pin         4
+#define LED1_pin         5
+#define BUT0_pin         6 
+#define BUT1_pin         7
+
+#define LED_ON           0
+#define LED_OFF          1
 
 // Captouch Slider
 #define SLIDER_RIGHT     3
@@ -65,4 +66,3 @@ void Slider_Sample(void);
 void Drive_LEDs(void);
 void GPIO_Open(void);
 void GPIO_Interrupt_Setup(void);
-
